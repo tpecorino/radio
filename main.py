@@ -86,6 +86,8 @@ class App(customtkinter.CTk):
         self.destroy()
 
     def play_stream(self):
+        if self.current_station is None:
+            return
 
         name = self.current_station.name
         url = self.current_station.url

@@ -34,6 +34,7 @@ def seed_database(db):
     db.add(station_1)
     db.add(station_2)
     db.add(station_3)
+    db.add(station_4)
     db.commit()
 
 
