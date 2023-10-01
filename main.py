@@ -5,7 +5,7 @@ import vlc
 from PIL import Image
 
 from data import database
-from widgets import StationListFrame
+from widgets import StationListFrame, AddStationFrame
 
 
 class App(customtkinter.CTk):
@@ -14,6 +14,7 @@ class App(customtkinter.CTk):
         self.geometry("500x500")
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
+        self.title("Radio")
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.createcommand('tk::mac::Quit', self.on_closing)
@@ -21,39 +22,53 @@ class App(customtkinter.CTk):
         self.session = database.get_database_session()
         self.update_view = True
         self.stations = []
+        self.current_station = None
+
+        image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "img")
 
         # Frames
-        self.station_form_frame = customtkinter.CTkFrame(self)
-        self.station_form_frame.grid(row=0, column=0, columnspan=2, pady=5, sticky="new")
+        self.station_info_container = customtkinter.CTkFrame(self)
+        self.station_info_container.grid(row=0, column=0, columnspan=2, pady=5)
+
+        self.station_info_frame = customtkinter.CTkFrame(self.station_info_container, border_width=2)
+        self.station_info_frame.grid(row=0, column=0, columnspan=2, pady=5, sticky="new")
+
+        self.station_btn_frame = customtkinter.CTkFrame(self.station_info_container)
+        self.station_btn_frame.grid(row=1, column=0, columnspan=2, pady=5, sticky="new")
 
         self.station_list_container_frame = customtkinter.CTkFrame(self)
         self.station_list_container_frame.columnconfigure(0, weight=1)
         self.station_list_container_frame.rowconfigure(1, weight=1)
         self.station_list_container_frame.grid(row=1, column=0, columnspan=2, pady=5, sticky="news")
 
-        # create main entry and button
-        self.station_name = customtkinter.CTkEntry(self.station_form_frame, placeholder_text="Name")
-        self.station_name.grid(row=0, column=0, columnspan=2, padx=10, pady=5, sticky="new")
+        self.station_playing_name = customtkinter.CTkLabel(self.station_info_frame, text="")
+        self.station_playing_name.grid(row=0, column=0, columnspan=1, padx=10, pady=5, sticky="new")
 
-        self.station_url = customtkinter.CTkEntry(self.station_form_frame, placeholder_text="URL")
-        self.station_url.grid(row=1, column=0, columnspan=2, padx=10, pady=5, sticky="new")
+        # Images
+        self.play_btn_img = customtkinter.CTkImage(Image.open(os.path.join(image_path, "play.png")),
+                                                   size=(20, 20))
 
-        self.play_btn = customtkinter.CTkButton(self.station_form_frame, text="Play",
+        self.pause_btn_img = customtkinter.CTkImage(Image.open(os.path.join(image_path, "pause.png")),
+                                                    size=(20, 20))
+
+        self.stop_btn_img = customtkinter.CTkImage(Image.open(os.path.join(image_path, "stop.png")),
+                                                   size=(20, 20))
+
+        self.play_btn = customtkinter.CTkButton(self.station_btn_frame, text="", image=self.play_btn_img,
                                                 command=self.play_stream)
         self.play_btn.grid(row=3, column=0, padx=10, pady=5, sticky="new")
 
-        self.pause_btn = customtkinter.CTkButton(self.station_form_frame, text="Pause",
-                                                 command=self.pause_stream)
-        self.pause_btn.grid(row=3, column=1, padx=10, pady=5, sticky="new")
-
-        self.stop_btn = customtkinter.CTkButton(self.station_form_frame, text="Stop",
+        self.stop_btn = customtkinter.CTkButton(self.station_btn_frame, text="", image=self.stop_btn_img,
                                                 command=self.stop_stream)
-        self.stop_btn.grid(row=3, column=2, padx=10, pady=5, sticky="new")
+        self.stop_btn.grid(row=3, column=1, padx=10, pady=5, sticky="new")
 
-        # create scrollable label and button frame
-        current_dir = os.path.dirname(os.path.abspath(__file__))
+        self.add_station_btn = customtkinter.CTkButton(self.station_btn_frame, text="Add",
+                                                       command=self.open_station_add_dialog)
+        self.add_station_btn.grid(row=3, column=2, padx=10, pady=5, sticky="new")
+
+        # create station list frame
         self.station_list_frame = StationListFrame(self.station_list_container_frame, width=300,
-                                                   command=self.label_button_frame_event,
+                                                   command=self.on_list_station_event,
                                                    corner_radius=0)
         self.station_list_frame.grid(row=1, column=0, pady=0, sticky="news")
 
@@ -63,9 +78,6 @@ class App(customtkinter.CTk):
         # Define VLC player
         self.player = self.instance.media_player_new()
 
-        # self.button_list = ButtonListFrame(self.graph_list_frame, gen_command=self.play_stream)
-        # self.button_list.grid(row=1, column=0, pady=0, sticky="new")
-
     def run(self):
         self.load_stations()
         self.mainloop()
@@ -73,47 +85,58 @@ class App(customtkinter.CTk):
     def on_closing(self, event=0):
         self.destroy()
 
-    def play_stream(self, station=None):
-        if station is None:
-            name = self.station_name.get()
-            url = self.station_url.get()
-        else:
-            url = station.url
-        # Define VLC media
-        media = self.instance.media_new(url)
+    def play_stream(self):
 
-        # Set player media
-        self.player.set_media(media)
+        name = self.current_station.name
+        url = self.current_station.url
 
-        # station = {
-        #     "name": name,
-        #     "url": url,
-        # }
-        #
-        # database.save_station(self.session, station)
+        if url:
+            # Define VLC media
+            media = self.instance.media_new(url)
 
-        # Play the media
-        print('Play')
-        self.player.play()
+            # Set player media
+            self.player.set_media(media)
+            self.play_btn.configure(image=self.pause_btn_img, command=self.pause_stream)
+
+            # Play the media
+            print('Play')
+            self.player.play()
+            self.station_playing_name.configure(text=name)
 
     def pause_stream(self):
         print('Pause')
         self.player.pause()
+        self.play_btn.configure(image=self.play_btn_img, command=self.play_stream)
 
     def stop_stream(self):
         print('Stop')
         self.player.stop()
+        self.play_btn.configure(image=self.play_btn_img, command=self.play_stream)
+
+    def mute(self):
+        self.player.audio_toggle_mute()
 
     def load_stations(self):
         self.stations = database.fetch_stations(self.session)
         print(self.stations)
         for station in self.stations:
             print('load', station)
-            self.station_list_frame.add_item(station, text=station.name)
+            self.station_list_frame.add_item(station, station.name, self.play_btn_img)
 
-    def label_button_frame_event(self, item):
-        self.play_stream(item)
+    def on_list_station_event(self, item):
+        self.current_station = item
+        self.play_stream()
         print(f"label button frame clicked: {item}")
+
+    def open_station_add_dialog(self):
+        dialog = AddStationFrame(self)
+        station_to_add = dialog.get_input()
+        print(station_to_add)
+
+        if station_to_add is not None:
+            if station_to_add['name'] and station_to_add['url']:
+                database.save_station(self.session, station_to_add)
+                self.station_list_frame.add_item(station_to_add, text=station_to_add['name'])
 
 
 if __name__ == "__main__":

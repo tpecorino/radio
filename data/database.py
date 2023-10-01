@@ -30,6 +30,7 @@ def seed_database(db):
     station_1 = Station("Radio Italia", 'https://stream10.xdevel.com/audio1s977004-1749/stream/icecast.audio')
     station_2 = Station("WUNC", 'http://wunc-ice.streamguys1.com:80/wunc-128-mp3')
     station_3 = Station("KUT", 'http://kut.streamguys1.com/kut')
+    station_4 = Station("WCPE", 'https://19013.live.streamtheworld.com/WCPE_FM.mp3')
     db.add(station_1)
     db.add(station_2)
     db.add(station_3)

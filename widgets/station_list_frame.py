@@ -11,12 +11,12 @@ class StationListFrame(customtkinter.CTkScrollableFrame):
         self.label_list = []
         self.button_list = []
 
-    def add_item(self, item, text=None):
+    def add_item(self, item, text=None, image=None):
         label = customtkinter.CTkLabel(self, text=text, compound="left", padx=5, anchor="w")
-        button = customtkinter.CTkButton(self, text="Play", width=100, height=24)
+        button = customtkinter.CTkButton(self, text="", image=image, width=50, height=24)
         if self.command is not None:
             button.configure(command=lambda: self.command(item))
-        label.grid(row=len(self.label_list), column=0, pady=(10, 10), sticky="w")
+        label.grid(row=len(self.label_list), column=0, padx=(10, 0), pady=(10, 10), sticky="w")
         button.grid(row=len(self.button_list), column=1, pady=(10, 10), padx=5)
         self.label_list.append(label)
         self.button_list.append(button)
