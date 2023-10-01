@@ -28,21 +28,19 @@ class App(customtkinter.CTk):
 
         # Frames
         self.station_info_container = customtkinter.CTkFrame(self)
-        self.station_info_container.grid(row=0, column=0, columnspan=2, pady=5)
-
-        self.station_info_frame = customtkinter.CTkFrame(self.station_info_container, border_width=2)
-        self.station_info_frame.grid(row=0, column=0, columnspan=2, pady=5, sticky="new")
+        self.station_info_container.grid(row=0, column=0, columnspan=2, pady=5, sticky="ns")
 
         self.station_btn_frame = customtkinter.CTkFrame(self.station_info_container)
-        self.station_btn_frame.grid(row=1, column=0, columnspan=2, pady=5, sticky="new")
+        self.station_btn_frame.grid(row=1, column=0, columnspan=2, pady=5, sticky="ns")
 
         self.station_list_container_frame = customtkinter.CTkFrame(self)
         self.station_list_container_frame.columnconfigure(0, weight=1)
         self.station_list_container_frame.rowconfigure(1, weight=1)
         self.station_list_container_frame.grid(row=1, column=0, columnspan=2, pady=5, sticky="news")
 
-        self.station_playing_name = customtkinter.CTkLabel(self.station_info_frame, text="")
-        self.station_playing_name.grid(row=0, column=0, columnspan=1, padx=10, pady=5, sticky="new")
+        self.station_playing_name = customtkinter.CTkLabel(self.station_info_container, text="", anchor="center",
+                                                           width=300)
+        self.station_playing_name.grid(row=0, column=0, columnspan=2, padx=10, pady=5, sticky="ew")
 
         # Images
         self.play_btn_img = customtkinter.CTkImage(Image.open(os.path.join(image_path, "play.png")),
@@ -54,15 +52,19 @@ class App(customtkinter.CTk):
         self.stop_btn_img = customtkinter.CTkImage(Image.open(os.path.join(image_path, "stop.png")),
                                                    size=(20, 20))
 
-        self.play_btn = customtkinter.CTkButton(self.station_btn_frame, text="", image=self.play_btn_img,
-                                                command=self.play_stream)
-        self.play_btn.grid(row=3, column=0, padx=10, pady=5, sticky="new")
+        self.add_btn_img = customtkinter.CTkImage(Image.open(os.path.join(image_path, "add.png")),
+                                                  size=(20, 20))
 
-        self.stop_btn = customtkinter.CTkButton(self.station_btn_frame, text="", image=self.stop_btn_img,
+        self.stop_btn = customtkinter.CTkButton(self.station_btn_frame, text="", image=self.stop_btn_img, width=40,
                                                 command=self.stop_stream)
-        self.stop_btn.grid(row=3, column=1, padx=10, pady=5, sticky="new")
+        self.stop_btn.grid(row=3, column=0, padx=10, pady=5, sticky="new")
 
-        self.add_station_btn = customtkinter.CTkButton(self.station_btn_frame, text="Add",
+        self.play_btn = customtkinter.CTkButton(self.station_btn_frame, text="", image=self.play_btn_img, width=40,
+                                                command=self.play_stream)
+        self.play_btn.grid(row=3, column=1, padx=10, pady=5, sticky="new")
+
+        self.add_station_btn = customtkinter.CTkButton(self.station_btn_frame, text="", image=self.add_btn_img,
+                                                       width=40,
                                                        command=self.open_station_add_dialog)
         self.add_station_btn.grid(row=3, column=2, padx=10, pady=5, sticky="new")
 
@@ -70,7 +72,7 @@ class App(customtkinter.CTk):
         self.station_list_frame = StationListFrame(self.station_list_container_frame, width=300,
                                                    command=self.on_list_station_event,
                                                    corner_radius=0)
-        self.station_list_frame.grid(row=1, column=0, pady=0, sticky="news")
+        self.station_list_frame.grid(row=1, column=0, pady=0, sticky="ns")
 
         # define VLC instance
         self.instance = vlc.Instance('--input-repeat=-1', '--fullscreen')
@@ -103,7 +105,7 @@ class App(customtkinter.CTk):
             # Play the media
             print('Play')
             self.player.play()
-            self.station_playing_name.configure(text=name)
+            self.station_playing_name.configure(text=name, anchor="center")
 
     def pause_stream(self):
         print('Pause')
