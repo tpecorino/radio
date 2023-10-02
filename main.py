@@ -11,7 +11,7 @@ from widgets import StationListFrame, AddStationFrame
 class App(customtkinter.CTk):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.geometry("500x500")
+        self.geometry("300x500")
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
         self.title("Radio")
@@ -28,19 +28,14 @@ class App(customtkinter.CTk):
 
         # Frames
         self.station_info_container = customtkinter.CTkFrame(self)
-        self.station_info_container.grid(row=0, column=0, columnspan=2, pady=5, sticky="ns")
+        self.station_info_container.grid(row=0, column=0, columnspan=3, pady=5)
 
         self.station_btn_frame = customtkinter.CTkFrame(self.station_info_container)
-        self.station_btn_frame.grid(row=1, column=0, columnspan=2, pady=5, sticky="ns")
-
-        self.station_list_container_frame = customtkinter.CTkFrame(self)
-        self.station_list_container_frame.columnconfigure(0, weight=1)
-        self.station_list_container_frame.rowconfigure(1, weight=1)
-        self.station_list_container_frame.grid(row=1, column=0, columnspan=2, pady=5, sticky="news")
+        self.station_btn_frame.grid(row=1, column=0, columnspan=2, sticky="ns")
 
         self.station_playing_name = customtkinter.CTkLabel(self.station_info_container, text="", anchor="center",
-                                                           width=300)
-        self.station_playing_name.grid(row=0, column=0, columnspan=2, padx=10, pady=5, sticky="ew")
+                                                           )
+        self.station_playing_name.grid(row=0, column=0, columnspan=2, padx=10, sticky="ew")
 
         # Images
         self.play_btn_img = customtkinter.CTkImage(Image.open(os.path.join(image_path, "play.png")),
@@ -69,6 +64,11 @@ class App(customtkinter.CTk):
         self.add_station_btn.grid(row=3, column=2, padx=10, pady=5, sticky="new")
 
         # create station list frame
+        self.station_list_container_frame = customtkinter.CTkFrame(self)
+        self.station_list_container_frame.columnconfigure(0, weight=1)
+        self.station_list_container_frame.rowconfigure(1, weight=1)
+        self.station_list_container_frame.grid(row=1, column=0, columnspan=2, sticky="news")
+
         self.station_list_frame = StationListFrame(self.station_list_container_frame, width=300,
                                                    command=self.on_list_station_event,
                                                    corner_radius=0)

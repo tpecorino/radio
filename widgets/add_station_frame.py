@@ -14,21 +14,20 @@ class AddStationFrame(customtkinter.CTkToplevel):
         self.title("Add Station")
 
         # sets the geometry of toplevel
-        self.geometry("500x200")
         self.lift()  # lift window on top
         self.attributes("-topmost", True)  # stay on top
 
         self._user_input = None
 
         self.station_form_frame = customtkinter.CTkFrame(self, width=300)
-        self.station_form_frame.grid(row=0, column=0, pady=5, sticky="new")
+        self.station_form_frame.grid(row=0, column=0, pady=10, padx=10, sticky="new")
 
         # create main entry and button
-        self.station_name = customtkinter.CTkEntry(self.station_form_frame, width=300, placeholder_text="Name")
-        self.station_name.grid(row=0, column=0, columnspan=2, padx=10, pady=5, sticky="new")
+        self.station_name = customtkinter.CTkEntry(self.station_form_frame, placeholder_text="Name")
+        self.station_name.grid(row=0, columnspan=3, padx=10, pady=5, sticky="new")
 
         self.station_url = customtkinter.CTkEntry(self.station_form_frame, placeholder_text="URL")
-        self.station_url.grid(row=1, column=0, columnspan=2, padx=10, pady=5, sticky="new")
+        self.station_url.grid(row=1, columnspan=2, padx=10, pady=5, sticky="new")
 
         self.save_btn = customtkinter.CTkButton(self.station_form_frame, text="Save",
                                                 command=self._save_input)
