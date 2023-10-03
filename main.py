@@ -31,10 +31,10 @@ class App(customtkinter.CTk):
         self.station_info_container.grid(row=0, column=0, columnspan=3, pady=5)
 
         self.station_btn_frame = customtkinter.CTkFrame(self.station_info_container)
-        self.station_btn_frame.grid(row=1, column=0, columnspan=2, sticky="ns")
+        self.station_btn_frame.grid(row=1, column=0, columnspan=3, sticky="ns")
 
         self.station_playing_name = customtkinter.CTkLabel(self.station_info_container, text="", anchor="center",
-                                                           )
+                                                           height=40, width=300)
         self.station_playing_name.grid(row=0, column=0, columnspan=2, padx=10, sticky="ew")
 
         # Images
@@ -64,15 +64,10 @@ class App(customtkinter.CTk):
         self.add_station_btn.grid(row=3, column=2, padx=10, pady=5, sticky="new")
 
         # create station list frame
-        self.station_list_container_frame = customtkinter.CTkFrame(self)
-        self.station_list_container_frame.columnconfigure(0, weight=1)
-        self.station_list_container_frame.rowconfigure(1, weight=1)
-        self.station_list_container_frame.grid(row=1, column=0, columnspan=2, sticky="news")
-
-        self.station_list_frame = StationListFrame(self.station_list_container_frame, width=300,
+        self.station_list_frame = StationListFrame(self, width=300,
                                                    command=self.on_list_station_event,
                                                    corner_radius=0)
-        self.station_list_frame.grid(row=1, column=0, pady=0, sticky="ns")
+        self.station_list_frame.grid(row=1, column=0, pady=0, sticky="nsew")
 
         # define VLC instance
         self.instance = vlc.Instance('--input-repeat=-1', '--fullscreen')
