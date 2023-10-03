@@ -11,7 +11,7 @@ from widgets import StationListFrame, AddStationFrame
 class App(customtkinter.CTk):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.geometry("300x500")
+        self.geometry("325x500")
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
         self.title("Radio")
