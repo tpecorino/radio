@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 customtkinter = "*"
 sqlalchemy = "*"
-python-dotenv = "*"
 python-vlc = "*"
 pillow = "*"
 
